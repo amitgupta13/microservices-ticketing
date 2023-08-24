@@ -1,10 +1,9 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { app } from "../app";
-import request from "supertest";
+import jwt from "jsonwebtoken";
 
 declare global {
-  var signin: () => Promise<string[]>;
+  var signin: () => string[];
 }
 
 let mongo: MongoMemoryServer;
@@ -30,18 +29,16 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signin = async () => {
-  const email = "test@test.com";
-  const password = "password";
-
-  const response = await request(app)
-    .post("/api/users/signup")
-    .send({
-      email,
-      password,
+global.signin = () => [
+  `session=${Buffer.from(
+    JSON.stringify({
+      jwt: jwt.sign(
+        {
+          id: new mongoose.Types.ObjectId(),
+          email: "test@test.com",
+        },
+        process.env.JWT_KEY!
+      ),
     })
-    .expect(201);
-
-  const cookie = response.get("Set-Cookie");
-  return cookie;
-};
+  ).toString("base64")}`,
+];
