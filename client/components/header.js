@@ -5,6 +5,8 @@ export default function Header({ currentUser }) {
     !currentUser && { label: "Sign Up", href: "/auth/signup" },
     !currentUser && { label: "Sign In", href: "/auth/signin" },
     currentUser && { label: "Sign Out", href: "/auth/signout" },
+    currentUser && { label: "Sell Tickets", href: "/tickets/new" },
+    currentUser && { label: "My orders", href: "/orders" },
   ]
     .filter((linkConfig) => linkConfig)
     .map(({ label, href }) => (
